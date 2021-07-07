@@ -6,8 +6,8 @@ try:
     print("logged in!")
 except:
     print("invalid credentials")
-    exit
+    exit()
 
-for tweet in gt.search(api, "Dream", count=10):
+for tweet in gt.search(api, "Dream", count=10).unnest_rt().to_text():
     print("\nNEW TWEET:\n")
-    print(tweet.text)
+    print(tweet)

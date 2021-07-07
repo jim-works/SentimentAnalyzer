@@ -16,5 +16,21 @@ def login(secret_path):
     return api
 
 
-def search(api, query, count=None, lang=None):
-    return api.search(q=query, count=count, lang=lang)
+def search(api, query, count=None, lang=None, tweet_mode="extended"):
+    results = api.search(q=query, count=count, lang=lang,
+                         tweet_mode=tweet_mode)
+    return TweetCollection(results)
+
+
+class TweetCollection:
+    tweets = []
+
+    def __init__(self, tweets):
+        self.tweets = tweets
+
+    def unnest_rt(self):
+        self.tweets = [getattr(t, "retweeted_status", t) for t in self.tweets]
+        return self
+
+    def to_text(self):
+        return [t.full_text for t in self.tweets]
