@@ -3,7 +3,9 @@ import json
 
 
 def login(secret_path):
-    secrets = json.load(open(secret_path, "r"))
+    f = open(secret_path, "r")
+    secrets = json.load(f)
+    f.close()
 
     # Authenticate to Twitter
     auth = tweepy.OAuthHandler(secrets["api_key"], secrets["api_secret"])
@@ -30,6 +32,11 @@ class TweetCollection:
 
     def unnest_rt(self):
         self.tweets = [getattr(t, "retweeted_status", t) for t in self.tweets]
+        return self
+
+    def append_search(self, api, query, count=None, lang=None, tweet_mode="extended"):
+        self.tweets.extend(search(api, query, count=count,
+                           lang=lang, tweet_mode=tweet_mode).tweets)
         return self
 
     def to_text(self):
